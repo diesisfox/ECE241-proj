@@ -16,14 +16,14 @@ module Keyboard_Parser (
 localparam 		PARSER_STATE_0_IDLE = 3'h0,
 				PARSER_STATE_1_E0_RECEIVED = 3'h1,
 				PARSER_STATE_2_F0_RECEIVED = 3'h2,
-				PARSER_STATE_3_CODE_RECEIVED = 3'h3,
-
-reg [7:0] ps2_byte;
+				PARSER_STATE_3_CODE_RECEIVED = 3'h3;
+input clk,reset,ps2_clk,ps2_data;
+wire [7:0] ps2_byte;
 wire data_received;
 reg [2:0] ns_keyboard_parser, s_keyboard_parser;
 reg F0, E0, ps2_clk_posedge, ps2_clk_negedge;
-output key_pressed, key_released;
-output [7:0] data;
+output reg key_pressed, key_released;
+output reg [7:0] data;
 reg [127:0] active;
 Altera_UP_PS2_Data_In AUPDI0 (
 	.clk(clk),
@@ -56,9 +56,9 @@ always @(*) begin
 			begin
 				if (data_received == 1'b0)
 					ns_keyboard_parser = PARSER_STATE_0_IDLE;
-				else if (data_in == 8'hE0)
+				else if (ps2_byte == 8'hE0)
 					ns_keyboard_parser = PARSER_STATE_1_E0_RECEIVED;
-				else if (data_in == 8'hF0)
+				else if (ps2_byte == 8'hF0)
 					ns_keyboard_parser = PARSER_STATE_2_F0_RECEIVED;
 				else
 					ns_keyboard_parser = PARSER_STATE_3_CODE_RECEIVED;
@@ -67,7 +67,7 @@ always @(*) begin
 			begin
 				if (data_received == 1'b0)
 					ns_keyboard_parser = PARSER_STATE_1_E0_RECEIVED;
-				else if (data_in == 8'hF0)
+				else if (ps2_byte == 8'hF0)
 					ns_keyboard_parser = PARSER_STATE_2_F0_RECEIVED;
 				else
 					ns_keyboard_parser = PARSER_STATE_3_CODE_RECEIVED;
@@ -100,7 +100,7 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-	if (data_received == 1'b1 && s_keyboard_parser != 3'h) begin
+	if (data_received == 1'b1 && s_keyboard_parser != 3'h3) begin
 		if (ps2_byte == 8'hE0)
 			E0 <= 1'b1;
 		else if (ps2_byte == 8'hF0)
@@ -123,7 +123,7 @@ always @(posedge clk) begin
 		if (E0 == 1'b0) begin
 			// a=0;z=1;s=2;x=3;c=4;f=5;v=6;g=7;b=8;n=9;j=10;m=11;k=12;,=13;l=14;.=15;/=16;'=17;
 			// 1=12;q=13;2=14;w=15;e=16;4=17;r=18;5=19;t=20;y=21;7=22;u=23;8=24;i=25;9=26;o=27;p=28;-=29;[=30;==31;]=32;\=33
-			case (data_in)
+			case (ps2_byte)
 				8'h1C: data <= 8'h00;
 				8'h1A: data <= 8'h01;
 				8'h1B: data <= 8'h02;
@@ -164,7 +164,7 @@ always @(posedge clk) begin
 				8'h55: data <= 8'h1F;
 				8'h5B: data <= 8'h20;
 				8'h5D: data <= 8'h21;
-		end
+			endcase
 		if (key_pressed == 1'b1 && active[data] == 1'b1)
 			key_pressed <= 1'b0;
 		end
@@ -172,6 +172,7 @@ always @(posedge clk) begin
 			key_released <= 1'b0;
 		end
 	end
+endmodule
 
 /*****************************************************************************
  *                                                                           *
