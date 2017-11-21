@@ -48,3 +48,11 @@ timing
 *example*
 *sopc_*
 PLLJ_PLLSPE_INFO.txt # The generated PLL specification file
+
+#MODELSIM SHIT
+*.wlf
+*.qdb
+*.qpg
+*.qtl
+*/_info
+*/_vmake

@@ -3,7 +3,8 @@ module Better_PS2_controller (
 	output reg ready,
 	output reg [7:0] data
 	);
-	reg [10:0] buffer,nextBuf,nextData;
+	reg [10:0] buffer,nextBuf;
+	reg [7:0] nextData;
 	reg dr, dr_c, dr_n;
 	//next buffer logic
 	always@*begin
@@ -12,8 +13,8 @@ module Better_PS2_controller (
 		nextBuf = {buffer[9:0],ps2Dat};
 		if(!nextBuf[10] && nextBuf[0])begin
 			if(nextBuf[1] == ~(^(nextBuf[9:2])))begin
+				nextData = nextBuf[9:2];
 				nextBuf = 11'h7ff;
-				nextData = nextBuf;
 				dr_n = !dr;
 			end
 		end
