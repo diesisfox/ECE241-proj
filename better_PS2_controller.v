@@ -13,7 +13,7 @@ module Better_PS2_controller (
 		nextBuf = {buffer[9:0],ps2Dat};
 		if(!nextBuf[10] && nextBuf[0])begin
 			if(nextBuf[1] == ~(^(nextBuf[9:2])))begin
-				nextData = nextBuf[9:2];
+				nextData = {nextBuf[2],nextBuf[3],nextBuf[4],nextBuf[5],nextBuf[6],nextBuf[7],nextBuf[8],nextBuf[9]};
 				nextBuf = 11'h7ff;
 				dr_n = !dr;
 			end

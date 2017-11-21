@@ -106,5 +106,5 @@ forceSequence ps2Dat 8 2  1  0 1 0 1 0 1 0 0 0 0 1  1 1
 run 152
 
 #send up arrow E0 75
-forceSequence ps2Dat 8 2  1  0 1 1 1 0 0 0 0 0 0 1  0 0 1 1 1 0 1 0 1 0 1  1 1
+forceSequence ps2Dat 8 2  1  0 0 0 0 0 0 1 1 1 0 1  0 1 0 1 0 1 1 1 0 0 1  1 1
 run 304
