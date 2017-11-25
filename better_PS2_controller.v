@@ -1,3 +1,14 @@
+module topLevel (CLOCK_50, PS2_CLK, PS2_DATA, HEX0, HEX1);
+	input CLOCK_50, PS2_CLK, PS2_DATA;
+	output [6:0] HEX0, HEX1;
+
+	reg [7:0] controllerOUT;
+
+	Better_PS2_controller bc0 (.clk(CLOCK_50),.ps2Clk(PS2_CLK),.ps2Dat(PS2_DATA),.data(controllerOUT));
+	hex_decoder h0 (.in(controllerOUT[3:0]),.out(HEX0));
+	hex_decoder h1 (.in(controllerOUT[7:4]),.out(HEX1));
+endmodule
+
 module Better_PS2_controller (
 	input clk, ps2Clk, ps2Dat,
 	output reg ready,

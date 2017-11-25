@@ -94,10 +94,10 @@ begin
     case (s_ps2_receiver)
 	PS2_STATE_0_IDLE:
 		begin
-			if ((wait_for_incoming_data == 1'b1) &&
+			if ((wait_for_incoming_data == 1'b1) && 
 					(received_data_en == 1'b0))
 				ns_ps2_receiver = PS2_STATE_1_WAIT_FOR_DATA;
-			else if ((start_receiving_data == 1'b1) &&
+			else if ((start_receiving_data == 1'b1) && 
 					(received_data_en == 1'b0))
 				ns_ps2_receiver = PS2_STATE_2_DATA_IN;
 			else
@@ -147,9 +147,9 @@ end
 
 always @(posedge clk)
 begin
-	if (reset == 1'b1)
+	if (reset == 1'b1) 
 		data_count	<= 3'h0;
-	else if ((s_ps2_receiver == PS2_STATE_2_DATA_IN) &&
+	else if ((s_ps2_receiver == PS2_STATE_2_DATA_IN) && 
 			(ps2_clk_posedge == 1'b1))
 		data_count	<= data_count + 3'h1;
 	else if (s_ps2_receiver != PS2_STATE_2_DATA_IN)
@@ -160,7 +160,7 @@ always @(posedge clk)
 begin
 	if (reset == 1'b1)
 		data_shift_reg			<= 8'h00;
-	else if ((s_ps2_receiver == PS2_STATE_2_DATA_IN) &&
+	else if ((s_ps2_receiver == PS2_STATE_2_DATA_IN) && 
 			(ps2_clk_posedge == 1'b1))
 		data_shift_reg	<= {ps2_data, data_shift_reg[7:1]};
 end
@@ -195,3 +195,4 @@ end
 
 
 endmodule
+
