@@ -18,14 +18,14 @@ localparam 		PARSER_STATE_0_IDLE = 3'h0,
 				PARSER_STATE_2_F0_RECEIVED = 3'h2,
 				PARSER_STATE_3_CODE_RECEIVED = 3'h3;
 input clk,reset,ps2_clk,ps2_data;
-wire [7:0] ps2_byte;
+wire [7:0] PS2_byte;
 wire data_received;
 reg [2:0] ns_keyboard_parser, s_keyboard_parser;
 reg F0, E0, ps2_clk_posedge, ps2_clk_negedge;
 output reg key_pressed, key_released;
-output reg [7:0] data;
+output 	reg [7:0] data;
 reg [127:0] active;
-PS2_Controller pc0 (.CLOCK_50(clk),.reset(reset),.PS2_CLK(ps2_clk),.PS2_DAT(ps2_data),.received_data(data),.received_data_en(data_received));
+PS2_Controller pc0 (.CLOCK_50(clk),.reset(reset),.PS2_CLK(ps2_clk),.PS2_DAT(ps2_data),.received_data(PS2_byte),.received_data_en(data_received));
 
 
 // FSM
@@ -47,27 +47,27 @@ always @(*) begin
 			begin
 				if (data_received == 1'b0)
 					ns_keyboard_parser = PARSER_STATE_0_IDLE;
-				else if (ps2_byte == 8'hE0)
+				else if (PS2_byte == 8'hE0 && data_received == 1'b1)
 					ns_keyboard_parser = PARSER_STATE_1_E0_RECEIVED;
-				else if (ps2_byte == 8'hF0)
+				else if (PS2_byte == 8'hF0 && data_received == 1'b1)
 					ns_keyboard_parser = PARSER_STATE_2_F0_RECEIVED;
-				else
+				else if (data_received == 1'b1)
 					ns_keyboard_parser = PARSER_STATE_3_CODE_RECEIVED;
 			end
 		PARSER_STATE_1_E0_RECEIVED:
 			begin
 				if (data_received == 1'b0)
 					ns_keyboard_parser = PARSER_STATE_1_E0_RECEIVED;
-				else if (ps2_byte == 8'hF0)
+				else if (PS2_byte == 8'hF0 && data_received == 1'b1)
 					ns_keyboard_parser = PARSER_STATE_2_F0_RECEIVED;
-				else
+				else if (PS2_byte != 8'hF0 && data_received == 1'b1)
 					ns_keyboard_parser = PARSER_STATE_3_CODE_RECEIVED;
 			end
 		PARSER_STATE_2_F0_RECEIVED:
 			begin
 				if (data_received == 1'b0)
 					ns_keyboard_parser = PARSER_STATE_2_F0_RECEIVED;
-				else
+				else if (data_received == 1'b1)
 					ns_keyboard_parser = PARSER_STATE_3_CODE_RECEIVED;
 			end
 		PARSER_STATE_3_CODE_RECEIVED:
@@ -84,26 +84,22 @@ end
 // Sequential logic
 
 always @(posedge clk) begin
-	if (reset == 1'b1)
-		data <= 8'h0;
-		key_pressed <= 1'b0;
-		key_released <= 1'b0;
-end
-
-always @(posedge clk) begin
-	if (data_received == 1'b1 && s_keyboard_parser != 3'h3) begin
-		if (ps2_byte == 8'hE0)
-			E0 <= 1'b1;
-		else if (ps2_byte == 8'hF0)
-			F0 <= 1'b1;
+	if (s_keyboard_parser == 3'h2) begin
+		F0 <= 1'b1;
 	end
-	if (data_received == 1'b1 && s_keyboard_parser == 3'h3)
-		data <= ps2_byte;
+	else if (s_keyboard_parser == 3'h1) begin
+		E0 <= 1'b1;
+	end
+	if (s_keyboard_parser == 3'h0) begin
+		E0 <= 1'b0;
+		F0 <= 1'b0;
+	end
 end
 
 always @(posedge clk) begin
 	key_pressed <= 1'b0;
 	key_released <= 1'b0;
+	
 	if (s_keyboard_parser == 3'h3) begin
 		if (F0 == 1'b1) begin
 			key_released <= 1'b1;
@@ -114,7 +110,7 @@ always @(posedge clk) begin
 		if (E0 == 1'b0) begin
 			// a=0;z=1;s=2;x=3;c=4;f=5;v=6;g=7;b=8;n=9;j=10;m=11;k=12;,=13;l=14;.=15;/=16;'=17;
 			// 1=12;q=13;2=14;w=15;e=16;4=17;r=18;5=19;t=20;y=21;7=22;u=23;8=24;i=25;9=26;o=27;p=28;-=29;[=30;==31;]=32;\=33
-			case (ps2_byte)
+			case (PS2_byte)
 				8'h1C: data <= 8'h00;
 				8'h1A: data <= 8'h01;
 				8'h1B: data <= 8'h02;
@@ -156,11 +152,16 @@ always @(posedge clk) begin
 				8'h5B: data <= 8'h20;
 				8'h5D: data <= 8'h21;
 			endcase
-		if (key_pressed == 1'b1 && active[data] == 1'b1)
-			key_pressed <= 1'b0;
-		end
-		else if (key_released == 1'b1 & active[data] == 1'b0)
-			key_released <= 1'b0;
+		//if (key_pressed == 1'b1 && active[data] == 1'b1)
+			//key_pressed <= 1'b0;
+		//else if (key_released == 1'b1 & active[data] == 1'b0)
+			//key_released <= 1'b0;
 		end
 	end
+	
+	if (reset == 1'b1)
+		data <= 8'h0;
+		key_pressed <= 1'b0;
+		key_released <= 1'b0;
+end
 endmodule
