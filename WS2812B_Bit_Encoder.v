@@ -19,12 +19,11 @@ module WS2812B_Bit_Encoder (
 
 	reg [15:0] counter, nextCounter, comp;
 	reg [2:0] state, nextState;
-	reg nextOut, nextNext;
+	reg nextNext;
 
 	//transition logic
 	always@(posedge clk)begin
 		counter <= nextCounter;
-		out <= nextOut; //NOTE: consider handling {out} in output logic
 		next <= nextNext;
 		state <= nextState;
 	end
@@ -32,34 +31,52 @@ module WS2812B_Bit_Encoder (
 	//state table
 	always@*begin
 		if(reset)begin
-			nextOut = 1'b0;
 			nextNext = 1'b0;
 			nextCounter = 15'b0;
 			nextState = S_R;
 		end
 		else begin
 			nextCounter = counter+1;
-			case(state)
+			next = 1'b0;
+			case(state) //NOTE: could compact to if else tree
 				S_1H:begin
-					if(nextCounter >= T1H)begin
-						nextState = T1L;
+					if(nextCounter >= comp)begin
+						nextState = S_1L;
 						nextCounter = 0;
 					end
 				end
 				S_1L:begin
-					//TODO
+					if(nextCounter >= comp)begin
+						if(r) nextState = S_R;
+						else if(d) nextState = S_1H;
+						else nextState = S_0H;
+						nextCounter = 0;
+						nextNext = 1'b1;
+					end
 				end
 				S_0H:begin
-					if(nextCounter >= T0H)begin
-						nextState = T0L;
+					if(nextCounter >= comp)begin
+						nextState = S_0L;
 						nextCounter = 0;
 					end
 				end
 				S_0L:begin
-					//TODO
+					if(nextCounter >= comp)begin
+						if(r) nextState = S_R;
+						else if(d) nextState = S_1H;
+						else nextState = S_0H;
+						nextCounter = 0;
+						nextNext = 1'b1;
+					end
 				end
 				S_R:begin
-					//TODO
+					if(nextCounter >= comp)begin
+						if(r) nextState = S_R;
+						else if(d) nextState = S_1H;
+						else nextState = S_0H;
+						nextCounter = 0;
+						nextNext = 1'b1;
+					end
 				end
 				default: nextState = S_R;
 			endcase
@@ -68,13 +85,19 @@ module WS2812B_Bit_Encoder (
 
 	//output logic
 	always@*begin
+		comp = TRST;
+		out = 1'b0;
 		case(state)
-			S_1H: comp = T1H;
+			S_1H:begin
+				comp = T1H;
+				out = 1'b1;
+			end
 			S_1L: comp = T1L;
-			S_0H: comp = T0H;
+			S_0H:begin
+				comp = T0H;
+				out = 1'b1;
+			end
 			S_0L: comp = T0L;
-			S_R: comp = TRST;
-			default: comp = TRST;
 		endcase
 	end
 endmodule // WS2812B_Bit_Encoder
