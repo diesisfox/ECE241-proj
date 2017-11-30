@@ -11,11 +11,11 @@ module WS2812B_Bit_Encoder (
 	TRST 	= 350; //350 cycles, 7000 ns
 
 	localparam //states
-	S_1H 	= 0,
+	S_1H 	= 4,
 	S_1L 	= 1,
 	S_0H	= 2,
 	S_0L	= 3,
-	S_R		= 4;
+	S_R		= 0;
 
 	reg [15:0] counter, nextCounter, comp;
 	reg [2:0] state, nextState;
@@ -31,13 +31,11 @@ module WS2812B_Bit_Encoder (
 	//state table
 	always@*begin
 		if(reset)begin
-			nextNext = 1'b0;
 			nextCounter = 15'b0;
 			nextState = S_R;
 		end
 		else begin
 			nextCounter = counter+1;
-			next = 1'b0;
 			case(state) //NOTE: could compact to if else tree
 				S_1H:begin
 					if(nextCounter >= comp)begin
@@ -51,7 +49,6 @@ module WS2812B_Bit_Encoder (
 						else if(d) nextState = S_1H;
 						else nextState = S_0H;
 						nextCounter = 0;
-						nextNext = 1'b1;
 					end
 				end
 				S_0H:begin
@@ -66,7 +63,6 @@ module WS2812B_Bit_Encoder (
 						else if(d) nextState = S_1H;
 						else nextState = S_0H;
 						nextCounter = 0;
-						nextNext = 1'b1;
 					end
 				end
 				S_R:begin
@@ -75,7 +71,6 @@ module WS2812B_Bit_Encoder (
 						else if(d) nextState = S_1H;
 						else nextState = S_0H;
 						nextCounter = 0;
-						nextNext = 1'b1;
 					end
 				end
 				default: nextState = S_R;
@@ -87,17 +82,21 @@ module WS2812B_Bit_Encoder (
 	always@*begin
 		comp = TRST;
 		out = 1'b0;
+		nextNext = 1'b0;
 		case(state)
 			S_1H:begin
 				comp = T1H;
 				out = 1'b1;
+				if(counter==0) nextNext = 1'b1;
 			end
 			S_1L: comp = T1L;
 			S_0H:begin
 				comp = T0H;
 				out = 1'b1;
+				if(counter==0) nextNext = 1'b1;
 			end
 			S_0L: comp = T0L;
+			S_R: if(counter==0) nextNext = 1'b1;
 		endcase
 	end
 endmodule // WS2812B_Bit_Encoder
