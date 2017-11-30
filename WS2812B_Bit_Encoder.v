@@ -83,20 +83,22 @@ module WS2812B_Bit_Encoder (
 		comp = TRST;
 		out = 1'b0;
 		nextNext = 1'b0;
-		case(state)
-			S_1H:begin
-				comp = T1H;
-				out = 1'b1;
-				if(counter==0) nextNext = 1'b1;
-			end
-			S_1L: comp = T1L;
-			S_0H:begin
-				comp = T0H;
-				out = 1'b1;
-				if(counter==0) nextNext = 1'b1;
-			end
-			S_0L: comp = T0L;
-			S_R: if(counter==0) nextNext = 1'b1;
-		endcase
+		if(!reset)begin
+			case(state)
+				S_1H:begin
+					comp = T1H;
+					out = 1'b1;
+					if(counter==0) nextNext = 1'b1;
+				end
+				S_1L: comp = T1L;
+				S_0H:begin
+					comp = T0H;
+					out = 1'b1;
+					if(counter==0) nextNext = 1'b1;
+				end
+				S_0L: comp = T0L;
+				S_R: if(counter==0) nextNext = 1'b1;
+			endcase
+		end
 	end
 endmodule // WS2812B_Bit_Encoder
