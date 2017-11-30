@@ -1,19 +1,24 @@
 module ledTest (
 	input CLOCK_50,
-	input [0:0]SW,
-	output [1:0]GPIO_0
+	input [0:0]KEY,
+	output [35:0]GPIO_0
 	);
 
 	reg [24:0]ds, rs;
-	wire next, out, reset;
-	
+	wire next, out, reset, CLOCK_10;
+
 	assign GPIO_0[0] = out;
-	assign GPIO_0[1] = out
-	assign reset = SW[0];
+	assign GPIO_0[1] = out;
+	assign GPIO_0[2] = next;
+	assign GPIO_0[3] = CLOCK_10;
+	assign GPIO_0[4] = reset;
+	assign reset = KEY[0];
 
-	WS2812B_Bit_Encoder BE0(CLOCK_50, reset, ds[0], rs[0], next, out);
+	PLL10M P1M0(CLOCK_50, 0, CLOCK_10);
 
-	always@(posedge CLOCK_50)begin
+	WS2812B_Bit_Encoder BE0(CLOCK_10, reset, ds[0], rs[0], next, out);
+
+	always@(posedge CLOCK_10)begin
 		if(reset)begin
 			ds <= 25'h0cdff98;
 			rs <= 25'h0000001;
