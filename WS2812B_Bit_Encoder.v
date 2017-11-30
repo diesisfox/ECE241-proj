@@ -1,3 +1,5 @@
+
+
 module WS2812B_Bit_Encoder (
 	input clk, reset, d, r,
 	output reg next, out
