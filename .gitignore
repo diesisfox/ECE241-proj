@@ -58,3 +58,6 @@ PLLJ_PLLSPE_INFO.txt # The generated PLL specification file
 *.qtl
 */_info
 */_vmake
+
+#MAC
+.DS_Store
