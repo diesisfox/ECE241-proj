@@ -18,13 +18,13 @@ localparam 		PARSER_STATE_0_IDLE = 3'h0,
 				PARSER_STATE_3_CODE_RECEIVED = 3'h3;
 input clk,reset,ps2_clk,ps2_data;
 wire [7:0] PS2_byte;
-wire data_received;
+wire data_received, CLOCK_10;
 reg [2:0] ns_keyboard_parser, s_keyboard_parser;
 reg F0, E0, ps2_clk_posedge, ps2_clk_negedge;
 output reg [127:0] key_data, E0_key_data;
 //Better_PS2_controller bpc0 (.clk(clk),.ps2Clk(ps2_clk),.ps2Dat(ps2_data),.ready(data_received),.data(PS2_byte));
 PS2_Controller pc0 (.CLOCK_50(clk),.reset(reset),.PS2_CLK(ps2_clk),.PS2_DAT(ps2_data),.received_data(PS2_byte),.received_data_en(data_received));
-
+PLL10M PL10 (CLOCK_50, 0, CLOCK_10);
 
 // FSM
 
