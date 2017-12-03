@@ -170,7 +170,16 @@ module RGB2HSV (
 		default:begin
 			//impossible
 			v = rF;
+			//s = 0
+			div_S_0a = F_42_5;
+			div_S_0b = F_255;
 			s = F_0;
+			//h = 0
+			sub_H_0a = F_42_5;
+			sub_H_0b = F_255;
+			sub_H_1a = F_42_5;
+			sub_H_1b = F_255;
+			add_H_0a = F_0;
 			h = F_0;
 		end
 		endcase
