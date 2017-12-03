@@ -30,4 +30,4 @@ module ledTest (
 		end
 	end
 
-endmodule // ledTest #ff6f66
+endmodule // ledTest
