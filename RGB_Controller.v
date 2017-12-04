@@ -77,7 +77,7 @@ always @(*) begin
 	case (s_rgb_controller)
 		STATE_0_IDLE:
 		begin
-			if ((keys[22] == 1'b1 || keys[30] == 1'b1 || keys[38] == 1'b1 || keys[37] == 1'b1 || keys[46] == 1'b1 || keys[54] == 1'b1 || keys[61] == 1'b1 || keys[62] == 1'b1 || keys[70] == 1'b1))
+			if ((keys[69] == 1'b1 || keys[22] == 1'b1 || keys[30] == 1'b1 || keys[38] == 1'b1 || keys[37] == 1'b1 || keys[46] == 1'b1 || keys[54] == 1'b1 || keys[61] == 1'b1 || keys[62] == 1'b1 || keys[70] == 1'b1))
 				ns_rgb_controller = STATE_6_SEL_ANIM;
 			else if (keys[21] == 1'b1)
 				ns_rgb_controller = STATE_1_ENTER_R;
@@ -208,6 +208,8 @@ always @(posedge clk) begin
 			animSel <= 4'h8;
 		else if (keys[70] == 1'b1)
 			animSel <= 4'h9;
+		else if (keys[69] == 1'b1)
+			animSel <= 4'h0;
 	end
 end
 
