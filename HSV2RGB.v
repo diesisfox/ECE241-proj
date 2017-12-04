@@ -4,7 +4,7 @@ module HSV2RGB (
 	output [7:0] r, g, b
 	);
 
-	wire [31:0] rF, gF, bF;
+	reg [31:0] rF, gF, bF;
 	wire [9:0] rQ, gQ, bQ;
 	assign r = rQ[7:0], g = gQ[7:0], b = bQ[7:0];
 
@@ -200,7 +200,7 @@ module HSV2RGB (
 		.add_sub(1'b0),
 		.clock(clk),
 		.dataa(v),
-		.datab(mult_D_1o),
+		.datab(mult_D_0o),
 		.result(sub_D_1o)
 	);
 endmodule // HSV2RGB

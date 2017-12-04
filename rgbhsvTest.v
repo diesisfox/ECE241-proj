@@ -3,13 +3,16 @@ module rgbhsvTest (
 	input CLOCK_50,
 	output [6:0]HEX0,HEX1,HEX2,HEX3,HEX4,HEX5
 	);
+
 	wire [31:0] h,s,v;
 	wire [9:0] hq,sq,vq;
-	RGB2HSV lol(CLOCK_50,{2'b0,SW[8:6],5'b0}, {2'b0,SW[5:3],5'b0}, {2'b0,SW[2:0],5'b0},h, s, v);
+	wire CLOCK_100;
+	PLL100M pll100M_0(CLOCK_50, 1'b0, CLOCK_100);
+	RGB2HSV lol(CLOCK_100,{2'b0,SW[8:6],5'b0}, {2'b0,SW[5:3],5'b0}, {2'b0,SW[2:0],5'b0},h, s, v);
 
-	FPconv_F32_to_Q2_8 lol1(CLOCK_50,h,hq);
-	FPconv_F32_to_Q2_8 lol2(CLOCK_50,s,sq);
-	FPconv_F32_to_Q2_8 lol3(CLOCK_50,v,vq);
+	FPconv_F32_to_Q2_8 lol1(CLOCK_100,h,hq);
+	FPconv_F32_to_Q2_8 lol2(CLOCK_100,s,sq);
+	FPconv_F32_to_Q2_8 lol3(CLOCK_100,v,vq);
 
 	hex_decoder lol11(hq[7:4],HEX5);
 	hex_decoder lol12(hq[3:0],HEX4);
