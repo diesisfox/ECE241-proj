@@ -37,7 +37,7 @@ localparam		STATE_0_IDLE = 4'h0,
 input clk, reset;
 input [127:0] keys, e_keys;
 output reg [7:0] r, g, b;
-output reg [1:0] animSel;
+output reg [3:0] animSel;
 output reg [3:0] s_rgb_controller;
 output [6:0] hex0, hex1, hex2, hex3, hex4, hex5;
 reg [3:0] ns_rgb_controller, s_input, ns_input;
@@ -77,7 +77,7 @@ always @(*) begin
 	case (s_rgb_controller)
 		STATE_0_IDLE:
 		begin
-			if ((keys[22] == 1'b1) || (keys[30] == 1'b1) || (keys[38] == 1'b1))
+			if ((keys[22] == 1'b1 || keys[30] == 1'b1 || keys[38] == 1'b1 || keys[37] == 1'b1 || keys[46] == 1'b1 || keys[54] == 1'b1 || keys[61] == 1'b1 || keys[62] == 1'b1 || keys[70] == 1'b1))
 				ns_rgb_controller = STATE_6_SEL_ANIM;
 			else if (keys[21] == 1'b1)
 				ns_rgb_controller = STATE_1_ENTER_R;
@@ -187,6 +187,7 @@ end
 // Sequential logic for the control FSM
 
 // always block for assigning values to animSel
+//keys[22] == 1'b1 || keys[30] == 1'b1 || keys[38] == 1'b1 || keys[37] == 1'b1 || keys[46] == 1'b1 || keys[54] == 1'b1 || keys[61] == 1'b1 || keys[62] == 1'b1 || keys[70] == 1'b1
 always @(posedge clk) begin
 	if (s_rgb_controller == STATE_6_SEL_ANIM) begin
 		if (keys[22] == 1'b1)
@@ -195,6 +196,18 @@ always @(posedge clk) begin
 			animSel <= 2'b10;
 		else if (keys[38] == 1'b1)
 			animSel <= 2'b11;
+		else if (keys[37] == 1'b1)
+			animSel <= 4'h4;
+		else if (keys[46] == 1'b1)
+			animSel <= 4'h5;
+		else if (keys[54] == 1'b1)
+			animSel <= 4'h6;
+		else if (keys[61] == 1'b1)
+			animSel <= 4'h7;
+		else if (keys[62] == 1'b1)
+			animSel <= 4'h8;
+		else if (keys[70] == 1'b1)
+			animSel <= 4'h9;
 	end
 end
 
