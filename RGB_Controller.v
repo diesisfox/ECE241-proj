@@ -168,7 +168,7 @@ always @(*) begin
 			if (keys[69] == 1'b1 || keys[22] == 1'b1 || keys[30] == 1'b1 || keys[38] == 1'b1 || keys[37] == 1'b1 || keys[46] == 1'b1 || keys[54] == 1'b1 || keys[61] == 1'b1 || keys[62] == 1'b1 || keys[70] == 1'b1 || keys[28] == 1'b1 || keys[50] == 1'b1 || keys[33] == 1'b1 || keys[35] == 1'b1 || keys[36] == 1'b1 || keys[43] == 1'b1)
 				ns_input = INPUT_STATE_4_WAIT;
 			else if (keys[102] == 1'b1)
-				ns_input = INPUT_STATE_0_IDLE;
+				ns_input = INPUT_STATE_1;
 			else
 				ns_input = INPUT_STATE_3;
 		end
@@ -176,6 +176,8 @@ always @(*) begin
 		begin
 			if (keys[70:22] == 49'b0 && keys[90] == 1'b1)
 				ns_input = INPUT_STATE_0_IDLE;
+			else if (keys[102] == 1'b1)
+				ns_input = INPUT_STATE_1;
 			else
 				ns_input = INPUT_STATE_4_WAIT;
 		end
