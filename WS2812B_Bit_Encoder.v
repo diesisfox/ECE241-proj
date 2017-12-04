@@ -6,10 +6,10 @@ module WS2812B_Bit_Encoder (
 	);
 
 	localparam //timing ALL DIVIDED BY 5
-	T1H 	= 16'd7, //35 cycles, 700 ns
-	T1L 	= 16'd2, //10 cycles, 200 ns
-	T0H 	= 16'd2, //10 cycles, 200 ns
-	T0L 	= 16'd7, //35 cycles, 700 ns
+	T1H 	= 16'd8, //40 cycles, 800 ns
+	T1L 	= 16'd3, //15 cycles, 300 ns
+	T0H 	= 16'd3, //15 cycles, 300 ns
+	T0L 	= 16'd8, //40 cycles, 800 ns
 	TRST 	= 16'd500; //2500 cycles, 50000 ns
 
 	localparam //states

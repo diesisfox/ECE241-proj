@@ -2,7 +2,8 @@ module HSV_Composition (
 	input clk,
 	input [31:0] dh, ds, dv,
 	input [7:0] r, g, b,
-	output [7:0] ro, go, bo
+	output [7:0] ro, go, bo,
+	output overflow
 	);
 
 	localparam
@@ -53,6 +54,7 @@ module HSV_Composition (
 		if(h_overflow==1'b1) ho = sub_H_0o;
 		else ho = add_H_0o;
 	end
+	assign overflow = h_overflow;
 
 	//multiply s by ds
 	FPmult mult_S_0(

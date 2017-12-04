@@ -4,7 +4,7 @@ module Top_Ctrl (
 	input [3:0] KEY,
 	output [9:0] LEDR,
 	output [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
-	output [1:0] GPIO_0
+	output [2:0] GPIO_0
 	);
 
 	localparam
@@ -65,7 +65,8 @@ module Top_Ctrl (
 		CLOCK_100,
 		dh, ds, dv,
 		rs, gs, bs,
-		r1, g1, b1
+		r1, g1, b1,
+		GPIO_0[2]
 	);
 	RGB_Composition RGBC0(
 		CLOCK_100,
@@ -86,6 +87,7 @@ module Top_Ctrl (
 		.latch(latch),.done(done),
 		.data_pin(GPIO_0[0])
 	);
+	assign GPIO_0[1] = GPIO_0[0];
 
 	//output control
 	reg[31:0] fpsCounter, nextFpsCounter;
