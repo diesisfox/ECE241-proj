@@ -15,7 +15,8 @@ module Top_Ctrl (
 	F_170 	= 32'h3f2a0000, // 4/6
 	F_212_5	= 32'h3f548000, // 5/6
 	F_255 	= 32'h3f7f0000, // 6/6
-	F_1_64	= 32'h3c800000; // 1/64
+	F_1_64	= 32'h3c800000, // 1/64
+	F_1 	= 32'h3f800000; // actually 1.0
 
 	//input setup
 	wire reset;
@@ -31,7 +32,9 @@ module Top_Ctrl (
 	wire [127:0] parser_output, e0_parser_output;
 	wire [7:0] r,g,b;
 	Keyboard_Parser kp0 (
-		.clk(CLOCK_10),.reset(reset),.ps2_clk(PS2_CLK),.ps2_data(PS2_DAT),.key_data(parser_output),.E0_key_data(e0_parser_output)
+		.clk(CLOCK_10),.reset(reset),
+		.ps2_clk(PS2_CLK),.ps2_data(PS2_DAT),
+		.key_data(parser_output),.E0_key_data(e0_parser_output)
 	);
 	RGB_Controller rgbc0 (
 		.clk(CLOCK_10),
@@ -77,7 +80,12 @@ module Top_Ctrl (
 	//output setup
 	reg latch, nextLatch;
 	wire done;
-	LED_Pixel_Encoder LED0(.r(ro),.g(go),.b(bo),.clk(CLOCK_10),.reset(1'b0),.latch(latch),.done(done),.data_pin(GPIO_0[0]));
+	LED_Pixel_Encoder LED0(
+		.r(ro),.g(go),.b(bo),
+		.clk(CLOCK_10),.reset(1'b0),
+		.latch(latch),.done(done),
+		.data_pin(GPIO_0[0])
+	);
 
 	//output control
 	reg[31:0] fpsCounter, nextFpsCounter;
@@ -91,37 +99,120 @@ module Top_Ctrl (
 		fpsCounter <= nextFpsCounter;
 		frac <= nextFrac;
 		case(animSel)
-			1:begin
+			1:begin //red "random" gradient
 				rs <= 8'h00;
 				gs <= 8'h00;
 				bs <= 8'h00;
 				dr <= nextVal;
+				dh <= F_0;
+				ds <= F_0;
+				dv <= F_0;
 			end
-			2:begin
+			2:begin //green "random" gradient
 				rs <= 8'h00;
 				gs <= 8'h00;
 				bs <= 8'h00;
 				dg <= nextVal;
+				dh <= F_0;
+				ds <= F_0;
+				dv <= F_0;
 			end
-			3:begin
+			3:begin //blue "random" gradient
 				rs <= 8'h00;
 				gs <= 8'h00;
 				bs <= 8'h00;
 				db <= nextVal;
+				dh <= F_0;
+				ds <= F_0;
+				dv <= F_0;
 			end
-			0: begin
+			0: begin //white gradient
 				rs <= 8'h00;
 				gs <= 8'h00;
 				bs <= 8'h00;
+				dr <= r;
+				dg <= g;
+				db <= b;
+				dh <= F_0;
+				ds <= F_1;
+				dv <= F_1;
+			end
+			4: begin //hue user-defined gradient
+				rs <= r;
+				gs <= g;
+				bs <= b;
+				dr <= 0;
+				dg <= 0;
+				db <= 0;
+				dh <= nextFrac;
+				ds <= F_1;
+				dv <= F_1;
+			end
+			5: begin //saturation user-defined gradient
+				rs <= r;
+				gs <= g;
+				bs <= b;
+				dr <= 0;
+				dg <= 0;
+				db <= 0;
+				dh <= F_0;
+				ds <= nextFrac;
+				dv <= F_1;
+			end
+			6: begin //value user-defined gradient
+				rs <= r;
+				gs <= g;
+				bs <= b;
+				dr <= 0;
+				dg <= 0;
+				db <= 0;
+				dh <= F_0;
+				ds <= F_1;
+				dv <= nextFrac;
+			end
+			7: begin //red user-defined gradient
+				rs <= 0;
+				gs <= g;
+				bs <= b;
 				dr <= nextVal;
-				dg <= nextVal;
-				db <= nextVal;
+				dg <= 0;
+				db <= 0;
+				dh <= F_0;
+				ds <= F_1;
+				dv <= F_1;
 			end
-			default:begin
+			8: begin //green user-defined gradient
+				rs <= r;
+				gs <= 0;
+				bs <= b;
+				dr <= 0;
+				dg <= nextVal;
+				db <= 0;
+				dh <= F_0;
+				ds <= F_1;
+				dv <= F_1;
+			end
+			9: begin //blue user-defined gradient
+				rs <= r;
+				gs <= g;
+				bs <= 0;
+				dr <= 0;
+				dg <= 0;
+				db <= nextVal;
+				dh <= F_0;
+				ds <= F_1;
+				dv <= F_1;
+			end
+			default:begin //solid white
 				rs <= 8'h00;
 				gs <= 8'h00;
 				bs <= 8'h00;
-				dg <= nextVal;
+				dr <= 8'hff;
+				dg <= 8'hff;
+				db <= 8'hff;
+				dh <= F_0;
+				ds <= F_0;
+				dv <= F_0;
 			end
 		endcase
 	end
@@ -129,7 +220,7 @@ module Top_Ctrl (
 	always@*begin
 		nextCounter = counter;
 		nextLatch = latch;
-		nextFrac = add_F_0o;
+		nextFrac = frac;
 		nextVal = val;
 		nextFpsCounter = fpsCounter+1;
 		if(done)begin

@@ -16,7 +16,8 @@ module HSV_Composition (
 
 	//setup conversion
 	wire [31:0] h, s, v;
-	wire [31:0] ho, so, vo;
+	wire [31:0] so, vo;
+	reg [31:0] ho;
 	wire [9:0] rQ, gQ, bQ;
 	RGB2HSV lol0(clk, {2'b0,r}, {2'b0,g}, {2'b0,b}, h, s, v);
 	HSV2RGB lol(clk, ho, so, vo, rQ, gQ, bQ);
@@ -38,7 +39,7 @@ module HSV_Composition (
 		.clock(clk),
 		.dataa(add_H_0o),
 		.datab(F_255),
-		.ageb(h_overflow)
+		.agb(h_overflow)
 	);
 	wire sub_H_0o;
 	FPadd sub_H_0(
@@ -48,7 +49,10 @@ module HSV_Composition (
 		.datab(F_255),
 		.result(sub_H_0o)
 	);
-	assign ho = h_overflow ? sub_H_0o : add_H_0o;
+	always@*begin
+		if(h_overflow==1'b1) ho = sub_H_0o;
+		else ho = add_H_0o;
+	end
 
 	//multiply s by ds
 	FPmult mult_S_0(
