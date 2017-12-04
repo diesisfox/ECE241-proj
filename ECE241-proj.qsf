@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY hsvrgbTest
+set_global_assignment -name TOP_LEVEL_ENTITY rgb2hsv2rgbTest
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.0.2
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "14:45:47  NOVEMBER 20, 2017"
 set_global_assignment -name LAST_QUARTUS_VERSION "17.0.2 Lite Edition"
@@ -692,6 +692,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_DATA[7] -ent
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_DIR -entity DE1_SoC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_NXT -entity DE1_SoC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_STP -entity DE1_SoC
+set_global_assignment -name VERILOG_FILE rgb2hsv2rgbTest.v
 set_global_assignment -name VERILOG_FILE hsvrgbTest.v
 set_global_assignment -name VERILOG_FILE HSV2RGB.v
 set_global_assignment -name VERILOG_FILE rgbhsvTest.v
