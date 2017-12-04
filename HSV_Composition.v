@@ -59,7 +59,7 @@ module HSV_Composition (
 	);
 
 	//multiply v by dv
-	FPmult mult_S_0(
+	FPmult mult_V_0(
 		.clock(clk),
 		.dataa(v),
 		.datab(dv),
