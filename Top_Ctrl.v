@@ -14,7 +14,8 @@ module Top_Ctrl (
 	F_127_5	= 32'h3eff0000, // 3/6
 	F_170 	= 32'h3f2a0000, // 4/6
 	F_212_5	= 32'h3f548000, // 5/6
-	F_255 	= 32'h3f7f0000; // 6/6
+	F_255 	= 32'h3f7f0000, // 6/6
+	F_1_64	= 32'h3c800000; // 1/64
 
 	//input setup
 	wire reset;
@@ -88,6 +89,7 @@ module Top_Ctrl (
 		latch <= nextLatch;
 		val <= nextVal;
 		fpsCounter <= nextFpsCounter;
+		frac <= nextFrac;
 		case(animSel)
 			1:begin
 				rs <= 8'h00;
@@ -127,10 +129,12 @@ module Top_Ctrl (
 	always@*begin
 		nextCounter = counter;
 		nextLatch = latch;
+		nextFrac = add_F_0o;
 		nextVal = val;
 		nextFpsCounter = fpsCounter+1;
 		if(done)begin
 			nextCounter = counter+1;
+			nextFrac = add_F_0o;
 			nextVal = val+4;
 			if(counter == 64)begin
 				nextLatch = 1'b1;
@@ -141,9 +145,19 @@ module Top_Ctrl (
 					nextFpsCounter = 0;
 					nextLatch = 1'b0;
 					nextVal = 0;
+					nextFrac = F_0;
 				end
 			end
 		end
 	end
+
+	wire [31:0] add_F_0o;
+	FPadd add_F_0(
+		.add_sub(1'b1),
+		.clock(CLOCK_100),
+		.dataa(frac),
+		.datab(F_1_64),
+		.result(add_F_0o)
+	);
 
 endmodule // Top_Ctrl
